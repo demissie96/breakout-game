@@ -1,7 +1,10 @@
 import React from "react";
+import { fabric } from "fabric";
 
 function App() {
-  return <div />;
+  return <>
+  
+  </>;
 }
 
 export default App;
