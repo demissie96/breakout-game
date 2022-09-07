@@ -73,7 +73,11 @@ function App() {
     var directionLeft = true;
     var directionRight = false;
     setInterval(() => {
-      if (
+      if(directionDown === true && ball.top + 22 > paddle.top && ball.top + 18 < paddle.top && ball.left - 10 > paddle.left && ball.left - 10 < paddle.left + 150 ) {
+        directionDown = false;
+        directionUp = true;
+        canvas.renderAll();
+      } else if (
         directionUp === true &&
         directionLeft === true &&
         ball.left > leftBorder &&
