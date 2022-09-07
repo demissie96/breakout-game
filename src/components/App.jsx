@@ -4,6 +4,7 @@ import "./App.css";
 
 var ball;
 var paddle;
+var message;
 const leftBorder = 0;
 const rightBorder = 780;
 const topBorder = 0;
@@ -18,7 +19,7 @@ function App() {
     new fabric.Canvas("canvas", {
       height: 600,
       width: 800,
-      backgroundColor: "grey",
+      backgroundColor: "#16213E",
       borderScaleFactor: 3,
       centeredScaling: true,
     });
@@ -37,9 +38,9 @@ function App() {
   useEffect(() => {
     setCanvas(initCanvas());
     document.addEventListener("keydown", (event) => {
-      if (event.key === "ArrowLeft") {
+      if (event.key === "ArrowLeft" && paddle.left > 0) {
         paddle.left -= 10;
-      } else if (event.key === "ArrowRight") {
+      } else if (event.key === "ArrowRight" && paddle.left < 650) {
         paddle.left += 10;
       }
     });
@@ -50,7 +51,7 @@ function App() {
   function InitialBallAndPaddle() {
     ball = new fabric.Circle({
       radius: 10,
-      fill: "red",
+      fill: "white",
       left: 390,
       top: 530,
       selectable: false,
@@ -58,7 +59,7 @@ function App() {
     paddle = new fabric.Rect({
       height: 20,
       width: 150,
-      fill: "blue",
+      fill: "#EB1D36",
       left: 325,
       top: 550,
       selectable: false,
@@ -72,8 +73,14 @@ function App() {
     var directionDown = false;
     var directionLeft = true;
     var directionRight = false;
-    setInterval(() => {
-      if(directionDown === true && ball.top + 22 > paddle.top && ball.top + 18 < paddle.top && ball.left - 10 > paddle.left && ball.left - 10 < paddle.left + 150 ) {
+    var moveTheBall = setInterval(() => {
+      if (
+        directionDown === true &&
+        ball.top + 22 > paddle.top &&
+        ball.top + 18 < paddle.top &&
+        ball.left - 10 > paddle.left &&
+        ball.left - 10 < paddle.left + 150
+      ) {
         directionDown = false;
         directionUp = true;
         canvas.renderAll();
@@ -86,7 +93,6 @@ function App() {
         ball.top -= pixelMove;
         ball.left -= pixelMove;
         canvas.renderAll();
-        console.log(ball.top);
       } else if (
         directionDown === true &&
         directionRight === true &&
@@ -96,7 +102,6 @@ function App() {
         ball.top += pixelMove;
         ball.left += pixelMove;
         canvas.renderAll();
-        console.log(ball.top);
       } else if (
         directionDown === true &&
         directionLeft === true &&
@@ -106,7 +111,6 @@ function App() {
         ball.top += pixelMove;
         ball.left -= pixelMove;
         canvas.renderAll();
-        console.log(ball.top);
       } else if (
         directionUp === true &&
         directionRight === true &&
@@ -116,7 +120,6 @@ function App() {
         ball.top -= pixelMove;
         ball.left += pixelMove;
         canvas.renderAll();
-        console.log(ball.top);
       } else {
         if (ball.left <= leftBorder) {
           directionLeft = false;
@@ -131,9 +134,19 @@ function App() {
           directionDown = true;
           console.log("direction down activated");
         } else if (ball.top >= bottomBorder) {
-          directionUp = true;
-          directionDown = false;
-          console.log("direction up activated");
+          clearInterval(moveTheBall);
+          console.log("Lost one life.");
+          message = new fabric.Text("Oops!", {
+            fill: "#EB1D36",
+            fontFamily: "serif",
+            fontWeight: "bold",
+            selectable: false,
+            textBackgroundColor: null,
+            fontSize: 80,
+            top: 260,
+            left: 300,
+          });
+          canvas.add(message);
         }
       }
     }, 20);
