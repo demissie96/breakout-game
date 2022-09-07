@@ -62,7 +62,6 @@ function App() {
   const [scoreSum, setScoreSum] = useState(score);
   const [lifeSum, setLifeSum] = useState(life);
 
-
   function InitialBallAndPaddle() {
     ball = new fabric.Circle({
       radius: 10,
@@ -166,10 +165,24 @@ function App() {
           setLifeSum(life);
           setTimeout(() => {
             canvas.remove(ball, paddle, message);
-            InitialBallAndPaddle();
-            setTimeout(() => {
-              StartBall();
-            }, 2000);
+            if (life > 0) {
+              InitialBallAndPaddle();
+              setTimeout(() => {
+                StartBall();
+              }, 2000);
+            } else {
+              message = new fabric.Text("Game Over!", {
+                fill: "#EB1D36",
+                fontFamily: "serif",
+                fontWeight: "bold",
+                selectable: false,
+                textBackgroundColor: null,
+                fontSize: 80,
+                top: 260,
+                left: 200,
+              });
+              canvas.add(message);
+            }
           }, 2000);
         }
       }
@@ -178,13 +191,25 @@ function App() {
 
   return (
     <>
-      <div >
+      <div>
         <div style={{ display: "flex", justifyContent: "space-around" }}>
-           <h2>Life: {lifeSum}</h2>
-           <h2>Score: {scoreSum}</h2>
+          <h2>Life: {lifeSum}</h2>
+          <h2>Score: {scoreSum}</h2>
         </div>
-        <button style={{ visibility: "hidden", position: "absolute" }} id="setup-game" onClick={() => InitialBallAndPaddle()}>Start Game</button>
-        <button style={{ visibility: "hidden", position: "absolute" }} id="start-game" onClick={() => StartBall()}>Start Ball</button>
+        <button
+          style={{ visibility: "hidden", position: "absolute" }}
+          id="setup-game"
+          onClick={() => InitialBallAndPaddle()}
+        >
+          Start Game
+        </button>
+        <button
+          style={{ visibility: "hidden", position: "absolute" }}
+          id="start-game"
+          onClick={() => StartBall()}
+        >
+          Start Ball
+        </button>
 
         <canvas id="canvas" width="800px" height="600px"></canvas>
       </div>
