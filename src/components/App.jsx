@@ -36,6 +36,13 @@ function App() {
   // Create canvas object
   useEffect(() => {
     setCanvas(initCanvas());
+    document.addEventListener("keydown", (event) => {
+      if (event.key === "ArrowLeft") {
+        paddle.left -= 10;
+      } else if (event.key === "ArrowRight") {
+        paddle.left += 10;
+      }
+    });
   }, []);
 
   // ********************** GAME LOGIC **************************
@@ -66,44 +73,64 @@ function App() {
     var directionLeft = true;
     var directionRight = false;
     setInterval(() => {
-      if (directionUp === true && directionLeft === true && ball.left > leftBorder && ball.top > topBorder) {
+      if (
+        directionUp === true &&
+        directionLeft === true &&
+        ball.left > leftBorder &&
+        ball.top > topBorder
+      ) {
         ball.top -= pixelMove;
         ball.left -= pixelMove;
         canvas.renderAll();
         console.log(ball.top);
-      } else if (directionDown === true && directionRight === true && ball.left < rightBorder && ball.top < bottomBorder ) {
+      } else if (
+        directionDown === true &&
+        directionRight === true &&
+        ball.left < rightBorder &&
+        ball.top < bottomBorder
+      ) {
         ball.top += pixelMove;
         ball.left += pixelMove;
         canvas.renderAll();
         console.log(ball.top);
-      } else if (directionDown === true && directionLeft === true && ball.left > leftBorder && ball.top < bottomBorder ) {
+      } else if (
+        directionDown === true &&
+        directionLeft === true &&
+        ball.left > leftBorder &&
+        ball.top < bottomBorder
+      ) {
         ball.top += pixelMove;
         ball.left -= pixelMove;
         canvas.renderAll();
         console.log(ball.top);
-      }  else if (directionUp === true && directionRight === true && ball.left < rightBorder && ball.top > topBorder ) {
+      } else if (
+        directionUp === true &&
+        directionRight === true &&
+        ball.left < rightBorder &&
+        ball.top > topBorder
+      ) {
         ball.top -= pixelMove;
         ball.left += pixelMove;
         canvas.renderAll();
         console.log(ball.top);
-      }  else {
-        if(ball.left <= leftBorder) {
+      } else {
+        if (ball.left <= leftBorder) {
           directionLeft = false;
           directionRight = true;
           console.log("direction right activated");
-        } else if (ball.left >= rightBorder){
+        } else if (ball.left >= rightBorder) {
           directionLeft = true;
           directionRight = false;
           console.log("direction left activated");
-        } else if (ball.top <= topBorder){
+        } else if (ball.top <= topBorder) {
           directionUp = false;
           directionDown = true;
           console.log("direction down activated");
-        } else if (ball.top >= bottomBorder){
+        } else if (ball.top >= bottomBorder) {
           directionUp = true;
           directionDown = false;
           console.log("direction up activated");
-        }       
+        }
       }
     }, 20);
   }
