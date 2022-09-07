@@ -2,13 +2,17 @@ import React, { useState, useEffect } from "react";
 import { fabric } from "fabric";
 import "./App.css";
 
-var ball;
-var paddle;
-var message;
 const leftBorder = 0;
 const rightBorder = 780;
 const topBorder = 0;
 const bottomBorder = 580;
+
+var ball;
+var paddle;
+var message;
+var refreshRate = 10;
+var score = 0;
+var life = 3;
 
 function App() {
   // Define a state variable to store and access the fabric.Canvas object
@@ -44,9 +48,20 @@ function App() {
         paddle.left += 10;
       }
     });
+
+    setTimeout(() => {
+      document.getElementById("setup-game").click();
+      setTimeout(() => {
+        document.getElementById("start-game").click();
+      }, 2000);
+    }, 1000);
   }, []);
 
   // ********************** GAME LOGIC **************************
+
+  const [scoreSum, setScoreSum] = useState(score);
+  const [lifeSum, setLifeSum] = useState(life);
+
 
   function InitialBallAndPaddle() {
     ball = new fabric.Circle({
@@ -147,16 +162,29 @@ function App() {
             left: 300,
           });
           canvas.add(message);
+          life--;
+          setLifeSum(life);
+          setTimeout(() => {
+            canvas.remove(ball, paddle, message);
+            InitialBallAndPaddle();
+            setTimeout(() => {
+              StartBall();
+            }, 2000);
+          }, 2000);
         }
       }
-    }, 20);
+    }, refreshRate);
   }
 
   return (
     <>
-      <div style={{ textAlign: "center" }}>
-        <button onClick={() => InitialBallAndPaddle()}>Start Game</button>
-        <button onClick={() => StartBall()}>Start Ball</button>
+      <div >
+        <div style={{ display: "flex", justifyContent: "space-around" }}>
+           <h2>Life: {lifeSum}</h2>
+           <h2>Score: {scoreSum}</h2>
+        </div>
+        <button style={{ visibility: "hidden", position: "absolute" }} id="setup-game" onClick={() => InitialBallAndPaddle()}>Start Game</button>
+        <button style={{ visibility: "hidden", position: "absolute" }} id="start-game" onClick={() => StartBall()}>Start Ball</button>
 
         <canvas id="canvas" width="800px" height="600px"></canvas>
       </div>
