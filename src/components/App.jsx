@@ -16,6 +16,7 @@ var moveTheBall;
 var refreshRate = 15;
 var score = 0;
 var life = 3;
+var remainingBrick = 1;
 var brickHitted = [];
 
 function App() {
@@ -125,10 +126,14 @@ function App() {
 
     // Move the ball with interval
     moveTheBall = setInterval(() => {
+
+      let oneBrickWasHit = false; // Prevent to hit 2 bricks at the same time
+
+      // ############################## BRICK LOGIC START ########################################
+      // Check if the ball hit the brick
       for (let index = 0; index < 16; index++) {
         if (
-          // ############################## BRICK LOGIC START ########################################
-          // Check if the ball hit the brick
+          oneBrickWasHit === false &&
           brickHitted[index] === false &&
           ball.top + 20 >= brick[index].top &&
           ball.top <= brick[index].top + 50 &&
@@ -138,7 +143,23 @@ function App() {
           brickHitted[index] = true;
           canvas.remove(brick[index]);
           score++;
+          remainingBrick--;
           setScoreSum(score);
+          if (remainingBrick < 1) {
+            clearInterval(moveTheBall);
+            message = new fabric.Text("You Win!", {
+              fill: "#59CE8F",
+              fontFamily: "serif",
+              fontWeight: "bold",
+              selectable: false,
+              textBackgroundColor: null,
+              fontSize: 80,
+              top: 260,
+              left: 240,
+            });
+            canvas.add(message);
+
+          }
           if (
             // When the ball hit the right side of the brick
             directionLeft === true &&
@@ -161,7 +182,7 @@ function App() {
             directionUp = !directionUp;
           }
           canvas.renderAll();
-          console.log("Hit the brick");
+          oneBrickWasHit = true;
           // ############################## BRICK LOGIC END ########################################
         }
       }
@@ -227,7 +248,6 @@ function App() {
         } else if (ball.top >= bottomBorder) {
           // When the ball fall down, stop the ball, and send a message
           clearInterval(moveTheBall);
-          console.log("Lost one life.");
           message = new fabric.Text("Oops!", {
             fill: "#EB1D36",
             fontFamily: "serif",
