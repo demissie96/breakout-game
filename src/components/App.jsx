@@ -16,12 +16,21 @@ var moveTheBall;
 var refreshRate = 15;
 var score = 0;
 var life = 3;
-var remainingBrick = 1;
+var remainingBrick = 16;
 var brickHitted = [];
 
+function Restart() {
+  console.log("Restart");
+  window.location.reload();
+}
+
 function App() {
+  // Restart button visibility
+  const [restartButton, setRestartButton] = useState(false);
+
   // Define a state variable to store and access the fabric.Canvas object
   const [canvas, setCanvas] = useState("");
+  
 
   // Create a function that returns a fabric.Canvas object
   const initCanvas = () =>
@@ -126,7 +135,6 @@ function App() {
 
     // Move the ball with interval
     moveTheBall = setInterval(() => {
-
       let oneBrickWasHit = false; // Prevent to hit 2 bricks at the same time
 
       // ############################## BRICK LOGIC START ########################################
@@ -149,7 +157,7 @@ function App() {
             clearInterval(moveTheBall);
             message = new fabric.Text("You Win!", {
               fill: "#59CE8F",
-              fontFamily: "serif",
+              fontFamily: "arial",
               fontWeight: "bold",
               selectable: false,
               textBackgroundColor: null,
@@ -158,7 +166,7 @@ function App() {
               left: 240,
             });
             canvas.add(message);
-
+            setRestartButton(true);
           }
           if (
             // When the ball hit the right side of the brick
@@ -250,7 +258,7 @@ function App() {
           clearInterval(moveTheBall);
           message = new fabric.Text("Oops!", {
             fill: "#EB1D36",
-            fontFamily: "serif",
+            fontFamily: "arial",
             fontWeight: "bold",
             selectable: false,
             textBackgroundColor: null,
@@ -275,7 +283,7 @@ function App() {
               // Send Game Over message when life runs out
               message = new fabric.Text("Game Over!", {
                 fill: "#EB1D36",
-                fontFamily: "serif",
+                fontFamily: "arial",
                 fontWeight: "bold",
                 selectable: false,
                 textBackgroundColor: null,
@@ -284,6 +292,7 @@ function App() {
                 left: 200,
               });
               canvas.add(message);
+              setRestartButton(true);
             }
           }, 2000);
         }
@@ -293,9 +302,27 @@ function App() {
 
   return (
     <>
-      <div>
-        <div style={{ display: "flex", justifyContent: "space-around" }}>
+      <div style={{ padding: "10px" }}>
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "space-around",
+            alignItems: "flex-end",
+          }}
+        >
           <h2>Life: {lifeSum}</h2>
+          <button
+            style={{
+              visibility: restartButton ? "visible" : "hidden",
+              fontSize: "30px",
+            }}
+            id="restart"
+            onClick={() => Restart()}
+            type="button"
+            className="btn btn-success"
+          >
+            Restart the Game
+          </button>
           <h2>Score: {scoreSum}</h2>
         </div>
         <button
@@ -317,14 +344,6 @@ function App() {
         </button>
 
         <canvas id="canvas" width="800px" height="600px"></canvas>
-
-        <button
-          style={{ visibility: "visible", position: "absolute" }}
-          id="start-game"
-          onClick={() => clearInterval(moveTheBall)}
-        >
-          Stop
-        </button>
       </div>
     </>
   );
