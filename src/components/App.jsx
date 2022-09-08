@@ -10,13 +10,13 @@ const bottomBorder = 580;
 var ball;
 var paddle;
 var message;
-var brick;
+var brick = [];
 var gradient;
 var moveTheBall;
-var refreshRate = 10;
+var refreshRate = 15;
 var score = 0;
 var life = 3;
-var brickHitted = false;
+var brickHitted = [];
 
 function App() {
   // Define a state variable to store and access the fabric.Canvas object
@@ -88,30 +88,33 @@ function App() {
 
   // Create a brick
   function Bricks() {
-    brick = new fabric.Rect({
-      height: 50,
-      width: 100,
-      left: 700,
-      top: 100,
-      selectable: false,
-      stroke: "black",
-      strokeWidth: 1,
-    });
-    // Add gradient color to the brick
-    gradient = new fabric.Gradient({
-      type: "linear",
-      gradientUnits: "pixels", // or 'percentage'
-      coords: { x1: 0, y1: 0, x2: 0, y2: brick.height },
-      colorStops: [
-        { offset: 0, color: "#C98474" },
-        { offset: 1, color: "#F2D388" },
-      ],
-    });
-    brick.set("fill", gradient);
-    canvas.add(brick);
+    for (let index = 0; index < 10; index++) {
+      brick[index] = new fabric.Rect({
+        height: 50,
+        width: 100,
+        left: index * 100,
+        top: 100,
+        selectable: false,
+        stroke: "black",
+        strokeWidth: 1,
+      });
+      // Add gradient color to the brick
+      gradient = new fabric.Gradient({
+        type: "linear",
+        gradientUnits: "pixels", // or 'percentage'
+        coords: { x1: 0, y1: 0, x2: 0, y2: brick[index].height },
+        colorStops: [
+          { offset: 0, color: "#C98474" },
+          { offset: 1, color: "#F2D388" },
+        ],
+      });
+      brickHitted[index] = false;
+      brick[index].set("fill", gradient);
+      canvas.add(brick[index]);
+    }
   }
 
-  // Ball behaviour
+  // Ball behaviour ******************************************
   function StartBall() {
     // Starting values
     const pixelMove = 3;
@@ -122,6 +125,46 @@ function App() {
 
     // Move the ball with interval
     moveTheBall = setInterval(() => {
+      for (let index = 0; index < 10; index++) {
+        if (
+          // ############################## BRICK LOGIC START ########################################
+          // Check if the ball hit the brick
+          brickHitted[index] === false &&
+          ball.top + 20 >= brick[index].top &&
+          ball.top <= brick[index].top + 50 &&
+          ball.left + 20 >= brick[index].left &&
+          ball.left <= brick[index].left + 100
+        ) {
+          brickHitted[index] = true;
+          canvas.remove(brick[index]);
+          score++;
+          setScoreSum(score);
+          if (
+            // When the ball hit the right side of the brick
+            directionLeft === true &&
+            ball.top < brick[index].top + 48 &&
+            ball.top + 20 > brick[index].top + 2
+          ) {
+            directionLeft = !directionLeft;
+            directionRight = !directionRight;
+          } else if (
+            // When the ball hit the left side of the brick
+            directionRight === true &&
+            ball.top < brick[index].top + 48 &&
+            ball.top + 20 > brick[index].top + 2
+          ) {
+            directionLeft = !directionLeft;
+            directionRight = !directionRight;
+          } else {
+            // When the ball hit the top or bottom part of the brick
+            directionDown = !directionDown;
+            directionUp = !directionUp;
+          }
+          canvas.renderAll();
+          console.log("Hit the brick");
+          // ############################## BRICK LOGIC END ########################################
+        }
+      }
       if (
         // When ball hit the paddle, change vertical direction
         directionDown === true &&
@@ -133,38 +176,6 @@ function App() {
         directionDown = false;
         directionUp = true;
         canvas.renderAll();
-      } else if (
-        // Check if the ball hit the brick
-        brickHitted === false &&
-        ball.top + 20 >= brick.top &&
-        ball.top <= brick.top + 50 &&
-        ball.left + 20 >= brick.left &&
-        ball.left <= brick.left + 100
-      ) {
-        brickHitted = true;
-        if (
-          // When the ball hit the right side of the brick
-          directionLeft === true &&
-          ball.top < brick.top + 48 &&
-          ball.top + 20 > brick.top + 2
-        ) {
-          directionLeft = !directionLeft;
-          directionRight = !directionRight;
-        } else if (
-          // When the ball hit the left side of the brick
-          directionRight === true &&
-          ball.top < brick.top + 48 &&
-          ball.top + 20 > brick.top + 2
-        ) {
-          directionLeft = !directionLeft;
-          directionRight = !directionRight;
-        } else {
-          // When the ball hit the top or bottom part of the brick
-          directionDown = !directionDown;
-          directionUp = !directionUp;
-        }
-        canvas.renderAll();
-        console.log("Hit the brick");
       } else if (
         // Check if the ball is within the borders of the game and if so, then move
         directionUp === true &&
