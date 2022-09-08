@@ -88,12 +88,12 @@ function App() {
 
   // Create a brick
   function Bricks() {
-    for (let index = 0; index < 10; index++) {
+    for (let index = 0; index < 16; index++) {
       brick[index] = new fabric.Rect({
         height: 50,
         width: 100,
-        left: index * 100,
-        top: 100,
+        left: index < 8 ? index * 100 : index * 100 - 800,
+        top: index < 8 ? 100 : 150,
         selectable: false,
         stroke: "black",
         strokeWidth: 1,
@@ -125,7 +125,7 @@ function App() {
 
     // Move the ball with interval
     moveTheBall = setInterval(() => {
-      for (let index = 0; index < 10; index++) {
+      for (let index = 0; index < 16; index++) {
         if (
           // ############################## BRICK LOGIC START ########################################
           // Check if the ball hit the brick
