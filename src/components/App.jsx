@@ -71,7 +71,7 @@ function App() {
       selectable: false,
     });
     paddle = new fabric.Rect({
-      height: 20,
+      height: 10,
       width: 150,
       fill: "#EB1D36",
       left: 325,
@@ -92,8 +92,8 @@ function App() {
         directionDown === true &&
         ball.top + 22 > paddle.top &&
         ball.top + 18 < paddle.top &&
-        ball.left - 10 > paddle.left &&
-        ball.left - 10 < paddle.left + 150
+        ball.left + 20 > paddle.left &&
+        ball.left < paddle.left + 150
       ) {
         directionDown = false;
         directionUp = true;
