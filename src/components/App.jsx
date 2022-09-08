@@ -30,7 +30,6 @@ function App() {
 
   // Define a state variable to store and access the fabric.Canvas object
   const [canvas, setCanvas] = useState("");
-  
 
   // Create a function that returns a fabric.Canvas object
   const initCanvas = () =>
@@ -38,19 +37,8 @@ function App() {
       height: 600,
       width: 800,
       backgroundColor: "#16213E",
-      borderScaleFactor: 3,
       centeredScaling: true,
     });
-  // Set global border styles on select
-  fabric.Object.prototype.set({
-    transparentCorners: false,
-    borderColor: "red",
-    borderScaleFactor: 3,
-    cornerStyle: "circle",
-    cornerSize: 10,
-    cornerStrokeColor: "red",
-    cornerColor: "white",
-  });
 
   // Create canvas object
   useEffect(() => {
@@ -302,7 +290,9 @@ function App() {
 
   return (
     <>
-      <div style={{ padding: "10px" }}>
+      <div
+        style={{ padding: "10px", backgroundColor: "#003865", color: "white" }}
+      >
         <div
           style={{
             display: "flex",
@@ -343,7 +333,7 @@ function App() {
           Start Ball
         </button>
 
-        <canvas id="canvas" width="800px" height="600px"></canvas>
+        <canvas style={{ border: "5px solid grey"}} id="canvas" width="800px" height="600px"></canvas>
       </div>
     </>
   );
