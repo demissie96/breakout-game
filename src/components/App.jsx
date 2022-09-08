@@ -10,9 +10,13 @@ const bottomBorder = 580;
 var ball;
 var paddle;
 var message;
+var brick;
+var gradient;
+var moveTheBall;
 var refreshRate = 10;
 var score = 0;
 var life = 3;
+var brickHitted = false;
 
 function App() {
   // Define a state variable to store and access the fabric.Canvas object
@@ -62,6 +66,7 @@ function App() {
   const [scoreSum, setScoreSum] = useState(score);
   const [lifeSum, setLifeSum] = useState(life);
 
+  // Create paddle and ball
   function InitialBallAndPaddle() {
     ball = new fabric.Circle({
       radius: 10,
@@ -81,14 +86,44 @@ function App() {
     canvas.add(ball, paddle);
   }
 
+  // Create a brick
+  function Bricks() {
+    brick = new fabric.Rect({
+      height: 50,
+      width: 100,
+      left: 700,
+      top: 100,
+      selectable: false,
+      stroke: "black",
+      strokeWidth: 1,
+    });
+    // Add gradient color to the brick
+    gradient = new fabric.Gradient({
+      type: "linear",
+      gradientUnits: "pixels", // or 'percentage'
+      coords: { x1: 0, y1: 0, x2: 0, y2: brick.height },
+      colorStops: [
+        { offset: 0, color: "#C98474" },
+        { offset: 1, color: "#F2D388" },
+      ],
+    });
+    brick.set("fill", gradient);
+    canvas.add(brick);
+  }
+
+  // Ball behaviour
   function StartBall() {
-    var pixelMove = 3;
+    // Starting values
+    const pixelMove = 3;
     var directionUp = true;
     var directionDown = false;
     var directionLeft = true;
     var directionRight = false;
-    var moveTheBall = setInterval(() => {
+
+    // Move the ball with interval
+    moveTheBall = setInterval(() => {
       if (
+        // When ball hit the paddle, change vertical direction
         directionDown === true &&
         ball.top + 22 > paddle.top &&
         ball.top + 18 < paddle.top &&
@@ -99,6 +134,39 @@ function App() {
         directionUp = true;
         canvas.renderAll();
       } else if (
+        // Check if the ball hit the brick
+        brickHitted === false &&
+        ball.top + 20 >= brick.top &&
+        ball.top <= brick.top + 50 &&
+        ball.left + 20 >= brick.left &&
+        ball.left <= brick.left + 100
+      ) {
+        brickHitted = true;
+        if (
+          // When the ball hit the right side of the brick
+          directionLeft === true &&
+          ball.top < brick.top + 48 &&
+          ball.top + 20 > brick.top + 2
+        ) {
+          directionLeft = !directionLeft;
+          directionRight = !directionRight;
+        } else if (
+          // When the ball hit the left side of the brick
+          directionRight === true &&
+          ball.top < brick.top + 48 &&
+          ball.top + 20 > brick.top + 2
+        ) {
+          directionLeft = !directionLeft;
+          directionRight = !directionRight;
+        } else {
+          // When the ball hit the top or bottom part of the brick
+          directionDown = !directionDown;
+          directionUp = !directionUp;
+        }
+        canvas.renderAll();
+        console.log("Hit the brick");
+      } else if (
+        // Check if the ball is within the borders of the game and if so, then move
         directionUp === true &&
         directionLeft === true &&
         ball.left > leftBorder &&
@@ -135,19 +203,18 @@ function App() {
         ball.left += pixelMove;
         canvas.renderAll();
       } else {
+        // If the ball hit the borders of the game, change direction
         if (ball.left <= leftBorder) {
           directionLeft = false;
           directionRight = true;
-          console.log("direction right activated");
         } else if (ball.left >= rightBorder) {
           directionLeft = true;
           directionRight = false;
-          console.log("direction left activated");
         } else if (ball.top <= topBorder) {
           directionUp = false;
           directionDown = true;
-          console.log("direction down activated");
         } else if (ball.top >= bottomBorder) {
+          // When the ball fall down, stop the ball, and send a message
           clearInterval(moveTheBall);
           console.log("Lost one life.");
           message = new fabric.Text("Oops!", {
@@ -161,16 +228,20 @@ function App() {
             left: 300,
           });
           canvas.add(message);
+          // Update remaining life
           life--;
           setLifeSum(life);
+          // Reset the ball and paddle and remove the warning message
           setTimeout(() => {
             canvas.remove(ball, paddle, message);
             if (life > 0) {
               InitialBallAndPaddle();
+              // Continue the game after 2 sec
               setTimeout(() => {
                 StartBall();
               }, 2000);
             } else {
+              // Send Game Over message when life runs out
               message = new fabric.Text("Game Over!", {
                 fill: "#EB1D36",
                 fontFamily: "serif",
@@ -186,7 +257,7 @@ function App() {
           }, 2000);
         }
       }
-    }, refreshRate);
+    }, refreshRate); // This defines the ball speed
   }
 
   return (
@@ -199,7 +270,10 @@ function App() {
         <button
           style={{ visibility: "hidden", position: "absolute" }}
           id="setup-game"
-          onClick={() => InitialBallAndPaddle()}
+          onClick={() => {
+            InitialBallAndPaddle();
+            Bricks();
+          }}
         >
           Start Game
         </button>
@@ -212,6 +286,14 @@ function App() {
         </button>
 
         <canvas id="canvas" width="800px" height="600px"></canvas>
+
+        <button
+          style={{ visibility: "visible", position: "absolute" }}
+          id="start-game"
+          onClick={() => clearInterval(moveTheBall)}
+        >
+          Stop
+        </button>
       </div>
     </>
   );
