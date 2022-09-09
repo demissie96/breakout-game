@@ -4,6 +4,8 @@ A simple copy of the Breakout game.
 
 The game will start automatically and you can move the paddle with the left or right arrow key. 
 
+Check out the game via this __[link](https://xpolr3-3000.preview.csb.app/)__.
+
 ### Tech Stack:
 
 - HTML
